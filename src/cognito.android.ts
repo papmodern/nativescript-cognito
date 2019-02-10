@@ -158,6 +158,25 @@ export class Cognito extends Common {
         });
     }
 
+    public confirmForgotPassword(userId, code, newPassword) {
+        const cognitoUser = this.userPool.getUser(userId);
+        return new Promise((resolve, reject) => {
+            const callBack = new ForgotPasswordHandler({
+                onSuccess() {
+                    resolve(cognitoUser.username);
+                },
+                // getResetCode(continuation) {
+                //
+                // },
+                onFailure(exception) {
+                    reject(exception);
+                }
+            });
+
+            cognitoUser.confirmPasswordInBackground(code, newPassword, callBack);
+        });
+    }
+
     public changePassword(userId, oldPassword, newPassword) {
         const cognitoUser = this.userPool.getUser(userId);
         return new Promise((resolve, reject) => {

@@ -51,6 +51,8 @@ export declare class Cognito extends Common {
 
     public forgotPassword(userId): Promise<string>;
 
+    public confirmForgotPassword(userId: string, code: string, newPassword: string): Promise<string>;
+
     public changePassword(userId, oldPassword, newPassword): Promise<string>;
 
     public getCurrentUserSession(): Promise<UserSession>;
