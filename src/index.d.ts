@@ -25,9 +25,19 @@ export declare class UserSession {
     isValidForThreshold: boolean;
 }
 
+export declare class DetailAttributes {
+    sub;
+    email_verified;
+    phone_number_verified;
+    phone_number;
+    given_name;
+    family_name;
+    email;
+}
+
 export declare class UserDetails {
-    attributes: [{ key, value }];
-    settings: [{ key, value }];
+    attributes: DetailAttributes;
+    settings: any;
 }
 
 export declare class Cognito extends Common {

@@ -109,24 +109,7 @@ export class Cognito extends Common {
                     continuation.continueTask();
                 },
                 onSuccess(session, newDevice) {
-                    const data = {
-                        accessToken: {
-                            token: session.getAccessToken().getJWTToken(),
-                            username: session.getAccessToken().getUsername(),
-                            expiration: session.getAccessToken().getExpiration()
-                        },
-                        refreshToken: {
-                            token: session.getRefreshToken().getToken()
-                        },
-                        idToken: {
-                            expiration: session.getIdToken().getExpiration(),
-                            issuedAt: session.getIdToken().getIssuedAt(),
-                            token: session.getIdToken().getJWTToken(),
-                        },
-                        isValidForThreshold: session.isValidForThreshold,
-                        username: session.getUsername(),
-                        isValid: session.isValid,
-                    }as UserSession;
+                    const data = Cognito.getSessionObject(session);
                     this.session = data;
                     resolve(data);
                 },
@@ -146,9 +129,9 @@ export class Cognito extends Common {
                 onSuccess() {
                     resolve(cognitoUser.username);
                 },
-                // getResetCode(continuation) {
-                //
-                // },
+                getResetCode(continuation) {
+
+                },
                 onFailure(exception) {
                     reject(exception);
                 }
@@ -165,9 +148,9 @@ export class Cognito extends Common {
                 onSuccess() {
                     resolve(cognitoUser.username);
                 },
-                // getResetCode(continuation) {
-                //
-                // },
+                getResetCode(continuation) {
+
+                },
                 onFailure(exception) {
                     reject(exception);
                 }
@@ -195,10 +178,30 @@ export class Cognito extends Common {
 
     public getCurrentUserSession() {
         return new Promise((resolve, reject) => {
-            if (this.session)
-                resolve(this.session);
-            else
-                reject("no session available");
+            const callBack = new AuthenticationHandler({
+                // getMFACode(continuation) {
+                //     const code = continuation.getParameter()[0];
+                //     continuation.setMfaCode(code);
+                //     continuation.continueTask();
+                // },
+                // authenticationChallenge(continuation) {
+                // },
+                // getAuthenticationDetails(continuation, userID) {
+                //     const authDetails = new AuthenticationDetails(userId, password, null);
+                //
+                //     continuation.setAuthenticationDetails(authDetails);
+                //     continuation.continueTask();
+                // },
+                onSuccess(session, newDevice) {
+                    const data = Cognito.getSessionObject(session);
+                    this.session = data;
+                    resolve(data);
+                },
+                onFailure(exception) {
+                    reject(exception);
+                }
+            });
+            this.getCurrentUser().getSession(callBack);
         });
     }
 
@@ -222,8 +225,15 @@ export class Cognito extends Common {
         return new Promise((resolve, reject) => {
             const callBack = new GetDetailsHandler({
                 onSuccess(details) {
+
+                    const detailsObj = {};
+                    const iterator = details.getAttributes().getAttributes().keySet().iterator();
+                    while (iterator.hasNext()) {
+                        const key = iterator.next();
+                        detailsObj[key] = details.getAttributes().getAttributes().get(key);
+                    }
                     resolve({
-                        attributes: details.getAttributes().getAttributes(),
+                        attributes: detailsObj,
                         settings: details.getSettings().getSettings()
                     }as UserDetails);
                 },
@@ -240,4 +250,25 @@ export class Cognito extends Common {
         this.getCurrentUser().signOut();
         this.session = null;
     }
+
+    private static getSessionObject = (session): UserSession => (
+        {
+            accessToken: {
+                token: session.getAccessToken().getJWTToken(),
+                username: session.getAccessToken().getUsername(),
+                expiration: session.getAccessToken().getExpiration()
+            },
+            refreshToken: {
+                token: session.getRefreshToken().getToken()
+            },
+            idToken: {
+                expiration: session.getIdToken().getExpiration(),
+                issuedAt: session.getIdToken().getIssuedAt(),
+                token: session.getIdToken().getJWTToken(),
+            },
+            isValidForThreshold: session.isValidForThreshold,
+            username: session.getUsername(),
+            isValid: session.isValid,
+        } as UserSession
+    );
 }
