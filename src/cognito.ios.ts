@@ -112,24 +112,7 @@ export class Cognito extends Common {
                     if (t.error) reject(t.error);
                     else {
                         const session = t.result;
-                        const data = {
-                            accessToken: {
-                                token: session.accessToken.tokenString,
-                                username: session.username,
-                                expiration: session.expirationTime
-                            },
-                            refreshToken: {
-                                token: session.refreshToken.tokenString
-                            },
-                            idToken: {
-                                token: session.idToken.tokenString,
-                                expiration: session.expirationTime,
-                                // issuedAt: session.getIdToken().getIssuedAt(),
-                            },
-                            isValidForThreshold: session.isValidForThreshold,
-                            username: session.username,
-                            isValid: session.isValid,
-                        } as UserSession;
+                        const data = Cognito.getSessionObject(session);
                         resolve(data);
                     }
                 });
@@ -207,7 +190,8 @@ export class Cognito extends Common {
                 dispatch_async(main_queue, () => {
                     if (t.error) reject(t.error);
                     else {
-                        resolve(t.result);
+                        const data = Cognito.getSessionObject(t.result);
+                        resolve(data);
                     }
                 });
                 return null;
@@ -266,5 +250,26 @@ export class Cognito extends Common {
     public logout() {
         this.getCurrentUser().signOut();
     }
+
+    private static getSessionObject = (session): UserSession => (
+        {
+            accessToken: {
+                token: session.accessToken.tokenString,
+                username: session.username,
+                expiration: session.expirationTime
+            },
+            refreshToken: {
+                token: session.refreshToken.tokenString
+            },
+            idToken: {
+                token: session.idToken.tokenString,
+                expiration: session.expirationTime,
+                // issuedAt: session.getIdToken().getIssuedAt(),
+            },
+            isValidForThreshold: session.isValidForThreshold,
+            username: session.username,
+            isValid: session.isValid,
+        } as UserSession
+    );
 
 }
