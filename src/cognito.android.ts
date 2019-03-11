@@ -60,14 +60,14 @@ export class Cognito extends Common {
         return new Promise((resolve, reject) => {
             const callBack = new GenericHandler({
                 onSuccess() {
-                    resolve(cognitoUser.username);
+                    resolve(userId);
                 },
                 onFailure(exception) {
                     reject(exception);
                 }
             });
 
-            this.userPool.confirmSignUpInBackground(confirmationCode, forcedAliasCreation, callBack);
+            cognitoUser.confirmSignUpInBackground(confirmationCode, forcedAliasCreation, callBack);
         });
     }
 
