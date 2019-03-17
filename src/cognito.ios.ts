@@ -1,5 +1,5 @@
 import { Common } from './cognito.common';
-import { UserSession } from "./index";
+import { UserSession, ErrorObject } from "./index";
 
 declare const AWSServiceConfiguration, AWSCognitoIdentityUserPoolConfiguration, AWSCognitoIdentityUserPool,
     AWSRegionUSEast1, AWSCognitoIdentityUserAttributeType;
@@ -47,7 +47,7 @@ export class Cognito extends Common {
             // @ts-ignore
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         const { cognitoUser, userConfirmed, codeDeliveryDetails } = t.result;
                         resolve({ cognitoUser, userConfirmed, codeDeliveryDetails });
@@ -88,7 +88,7 @@ export class Cognito extends Common {
 
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         resolve(cognitoUser.username);
                     }
@@ -109,7 +109,7 @@ export class Cognito extends Common {
             // @ts-ignore
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         const session = t.result;
                         const data = Cognito.getSessionObject(session);
@@ -131,7 +131,7 @@ export class Cognito extends Common {
 
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         resolve(cognitoUser.username);
                     }
@@ -151,7 +151,7 @@ export class Cognito extends Common {
 
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         resolve(cognitoUser.username);
                     }
@@ -170,7 +170,7 @@ export class Cognito extends Common {
         return new Promise((resolve, reject) => {
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         resolve(cognitoUser.username);
                     }
@@ -188,7 +188,7 @@ export class Cognito extends Common {
         return new Promise((resolve, reject) => {
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         const data = Cognito.getSessionObject(t.result);
                         resolve(data);
@@ -208,7 +208,7 @@ export class Cognito extends Common {
         return new Promise((resolve, reject) => {
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         resolve(cognitoUser.username);
                     }
@@ -226,7 +226,7 @@ export class Cognito extends Common {
         return new Promise((resolve, reject) => {
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         const data = {};
                         const attrs = t.result.userAttributes;
@@ -270,6 +270,13 @@ export class Cognito extends Common {
             username: session.username,
             isValid: session.isValid,
         } as UserSession
+    );
+
+    private static getErrorObject = (error): ErrorObject => (
+        {
+            code: error.userInfo.objectForKey("__type"),
+            message: error.userInfo.objectForKey("message")
+        } as ErrorObject 
     );
 
 }

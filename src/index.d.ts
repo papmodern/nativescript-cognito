@@ -25,6 +25,11 @@ export declare class UserSession {
     isValidForThreshold: boolean;
 }
 
+export declare class ErrorObject {
+    code: string;
+    message: string;
+}
+
 export declare class DetailAttributes {
     sub;
     email_verified;
