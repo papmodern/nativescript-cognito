@@ -1,6 +1,14 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page"
-  xmlns:ui="nativescript-cognito">
-  <StackLayout class="p-20">
-    <Label text="{{ message }}" class="t-20 text-center c-black" textWrap="true"/>
-  </StackLayout>
+      xmlns:ui="nativescript-cognito">
+    <StackLayout class="p-20">
+        <Label text="{{ message }}" class="t-20 text-center c-black" textWrap="true"/>
+        <TextField class="input" text="{{ email }}" hint="Email" keyboardType="email" autocorrect="false"
+                   autocapitalizationType="none"
+                   returnKeyType="next"/>
+        <TextField id="password" class="input" text="{{ password }}" hint="Password" secure="true"/>
+        <TextField id="password" class="input" text="{{ confirm }}" hint="Activation Code"/>
+        <Button class="btn" text="Register" tap="{{ register }}"/>
+        <Button class="btn" text="Login" tap="{{ login }}"/>
+        <Button class="btn" text="Active" tap="{{ active }}"/>
+    </StackLayout>
 </Page>

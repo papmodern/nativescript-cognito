@@ -1,6 +1,6 @@
 import {Common} from './cognito.common';
 import * as app from 'tns-core-modules/application';
-import {AccessToken, IdToken, RefreshToken, UserDetails, UserSession} from "./index";
+import {AccessToken, ErrorObject, IdToken, RefreshToken, UserDetails, UserSession} from "./index";
 
 declare const com: { amazonaws };
 
@@ -47,7 +47,7 @@ export class Cognito extends Common {
                     resolve({cognitoUser, userConfirmed, codeDeliveryDetails});
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -63,7 +63,7 @@ export class Cognito extends Common {
                     resolve(userId);
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -79,7 +79,7 @@ export class Cognito extends Common {
                     resolve(cognitoUser.username);
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -114,7 +114,7 @@ export class Cognito extends Common {
                     resolve(data);
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -133,7 +133,7 @@ export class Cognito extends Common {
 
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -152,7 +152,7 @@ export class Cognito extends Common {
 
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -168,7 +168,7 @@ export class Cognito extends Common {
                     resolve(cognitoUser.username);
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -198,7 +198,7 @@ export class Cognito extends Common {
                     resolve(data);
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
             this.getCurrentUser().getSession(callBack);
@@ -213,7 +213,7 @@ export class Cognito extends Common {
                     resolve(cognitoUser.username);
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -238,7 +238,7 @@ export class Cognito extends Common {
                     }as UserDetails);
                 },
                 onFailure(exception) {
-                    reject(exception);
+                    reject(Cognito.getErrorObject(exception));
                 }
             });
 
@@ -270,5 +270,12 @@ export class Cognito extends Common {
             username: session.getUsername(),
             isValid: session.isValid,
         } as UserSession
+    );
+
+    private static getErrorObject = (error): ErrorObject => (
+        {
+            code: error.getErrorCode(),
+            message: error.getErrorMessage()
+        } as ErrorObject
     );
 }
