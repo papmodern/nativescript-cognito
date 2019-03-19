@@ -68,7 +68,7 @@ export class Cognito extends Common {
             // @ts-ignore
             const callBack = t => {
                 dispatch_async(main_queue, () => {
-                    if (t.error) reject(t.error);
+                    if (t.error) reject(Cognito.getErrorObject(t.error));
                     else {
                         resolve(cognitoUser.username);
                     }
