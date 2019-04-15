@@ -56,4 +56,22 @@ export class HelloWorldModel extends Observable {
             console.log(e);
         }
     }
+
+    async forgot() {
+        try {
+            let data = await this.cognito.forgotPassword(this.email);
+            console.log(data);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async confirmForgot() {
+        try {
+            let data = await this.cognito.confirmForgotPassword(this.email, this.confirm, this.password);
+            console.log(data);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 }

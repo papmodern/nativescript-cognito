@@ -18,6 +18,9 @@ const CognitoUserPool = com.amazonaws.mobileconnectors.cognitoidentityprovider.C
 export class Cognito extends Common {
     userPool = null;
     session: UserSession = null;
+    forgotContinue = null;
+    forgotSuccess = () => null;
+    forgotFailure = e => null;
 
     constructor(userPoolId, clientId, secret?) {
         super();
@@ -124,16 +127,20 @@ export class Cognito extends Common {
 
     public forgotPassword(userId) {
         const cognitoUser = this.userPool.getUser(userId);
+        let that = this
         return new Promise((resolve, reject) => {
             const callBack = new ForgotPasswordHandler({
                 onSuccess() {
-                    resolve(cognitoUser.username);
+                    // resolve(cognitoUser.username);
+                    that.forgotSuccess()
                 },
                 getResetCode(continuation) {
-
+                    that.forgotContinue = continuation;
+                    resolve(cognitoUser.username);
                 },
                 onFailure(exception) {
                     reject(Cognito.getErrorObject(exception));
+                    that.forgotFailure(exception)
                 }
             });
 
@@ -142,21 +149,19 @@ export class Cognito extends Common {
     }
 
     public confirmForgotPassword(userId, code, newPassword) {
-        const cognitoUser = this.userPool.getUser(userId);
+        if (this.forgotContinue == null) return 0;
+        // Set the new password
+        this.forgotContinue.setPassword(newPassword);
+
+        // Set the code to verify
+        this.forgotContinue.setVerificationCode(code);
+
+        // Let the forgot password process proceed
+        this.forgotContinue.continueTask();
+
         return new Promise((resolve, reject) => {
-            const callBack = new ForgotPasswordHandler({
-                onSuccess() {
-                    resolve(cognitoUser.username);
-                },
-                getResetCode(continuation) {
-
-                },
-                onFailure(exception) {
-                    reject(Cognito.getErrorObject(exception));
-                }
-            });
-
-            cognitoUser.confirmPasswordInBackground(code, newPassword, callBack);
+            this.forgotSuccess = () => resolve(userId);
+            this.forgotFailure = e => reject(Cognito.getErrorObject(e));
         });
     }
 
@@ -235,7 +240,7 @@ export class Cognito extends Common {
                     resolve({
                         attributes: detailsObj,
                         settings: details.getSettings().getSettings()
-                    }as UserDetails);
+                    } as UserDetails);
                 },
                 onFailure(exception) {
                     reject(Cognito.getErrorObject(exception));
@@ -274,8 +279,9 @@ export class Cognito extends Common {
 
     private static getErrorObject = (error): ErrorObject => (
         {
-            code: error.getErrorCode(),
-            message: error.getErrorMessage()
+
+            code: "0",
+            message: error.getMessage()
         } as ErrorObject
     );
 }

@@ -10,5 +10,7 @@
         <Button class="btn" text="Register" tap="{{ register }}"/>
         <Button class="btn" text="Login" tap="{{ login }}"/>
         <Button class="btn" text="Active" tap="{{ active }}"/>
+        <Button class="btn" text="Forget" tap="{{ forgot }}"/>
+        <Button class="btn" text="Confirm Forget" tap="{{ confirmForgot }}"/>
     </StackLayout>
 </Page>
