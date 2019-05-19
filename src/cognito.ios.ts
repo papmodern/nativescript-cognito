@@ -2,18 +2,18 @@ import { Common } from './cognito.common';
 import { UserSession, ErrorObject } from "./index";
 
 declare const AWSServiceConfiguration, AWSCognitoIdentityUserPoolConfiguration, AWSCognitoIdentityUserPool,
-    AWSRegionUSEast1, AWSCognitoIdentityUserAttributeType;
+    AWSRegionUSEast1, AWSCognitoIdentityUserAttributeType, AWSRegionType;
 
 const main_queue = dispatch_get_current_queue();
 
 export class Cognito extends Common {
     userPool = null;
 
-    constructor(userPoolId, clientId, secret?) {
+    constructor(userPoolId, clientId, secret?, region?: Region) {
         super();
 
         const serviceConf = new AWSServiceConfiguration(
-            AWSRegionUSEast1,
+            AWSRegionType[region] || AWSRegionUSEast1,
             null
         );
 
@@ -270,13 +270,37 @@ export class Cognito extends Common {
             username: session.username,
             isValid: session.isValid,
         } as UserSession
-    );
+    )
 
     private static getErrorObject = (error): ErrorObject => (
         {
             code: error.userInfo.objectForKey("__type"),
             message: error.userInfo.objectForKey("message")
-        } as ErrorObject 
-    );
+        } as ErrorObject
+    )
 
+}
+
+export enum Region {
+    UNKNOWN = 'Unknown',
+    US_GOV_EAST_1 = 'USGovWest1',
+    US_EAST_1 = 'USEast1',
+    US_EAST_2 = 'USEast2',
+    US_WEST_1 = 'USWest1',
+    US_WEST_2 = 'USWest2',
+    EU_WEST_1 = 'EUWest1',
+    EU_WEST_2 = 'EUWest2',
+    EU_WEST_3 = 'EUWest3',
+    EU_CENTRAL_1 = 'EUCentral1',
+    EU_NORTH_1 = 'EUNorth1',
+    AP_SOUTH_1 = 'APSouth1',
+    AP_SOUTHEAST_1 = 'APSoutheast1',
+    AP_SOUTHEAST_2 = 'APSoutheast2',
+    AP_NORTHEAST_1 = 'APNortheast1',
+    AP_NORTHEAST_2 = 'APNortheast2',
+    SA_EAST_1 = 'SAEast1',
+    CA_CENTRAL_1 = 'CACentral1',
+    CN_NORTH_1 = 'CNNorth1',
+    CN_NORTHWEST_1 = 'CNNorthWest1',
+    DEFAULT_REGION = 'DEFAULT_REGION',
 }

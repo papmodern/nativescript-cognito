@@ -1,6 +1,6 @@
-import {Common} from './cognito.common';
+import { Common } from './cognito.common';
 import * as app from 'tns-core-modules/application';
-import {AccessToken, ErrorObject, IdToken, RefreshToken, UserDetails, UserSession} from "./index";
+import { AccessToken, ErrorObject, IdToken, RefreshToken, UserDetails, UserSession } from "./index";
 
 declare const com: { amazonaws };
 
@@ -12,7 +12,8 @@ const CognitoUserPool = com.amazonaws.mobileconnectors.cognitoidentityprovider.C
     AuthenticationHandler = com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler,
     GetDetailsHandler = com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler,
     ForgotPasswordHandler = com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler,
-    VerificationHandler = com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.VerificationHandler;
+    VerificationHandler = com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.VerificationHandler,
+    Regions = com.amazonaws.regions.Regions;
 
 
 export class Cognito extends Common {
@@ -22,10 +23,10 @@ export class Cognito extends Common {
     forgotSuccess = () => null;
     forgotFailure = e => null;
 
-    constructor(userPoolId, clientId, secret?) {
+    constructor(userPoolId, clientId, secret?, region?: Region) {
         super();
         this.userPool = new CognitoUserPool(
-            app.android.context, userPoolId, clientId, secret
+            app.android.context, userPoolId, clientId, secret, Regions[region]
         );
     }
 
@@ -47,7 +48,7 @@ export class Cognito extends Common {
         return new Promise((resolve, reject) => {
             const callBack = new SignUpHandler({
                 onSuccess(cognitoUser, userConfirmed, codeDeliveryDetails) {
-                    resolve({cognitoUser, userConfirmed, codeDeliveryDetails});
+                    resolve({ cognitoUser, userConfirmed, codeDeliveryDetails });
                 },
                 onFailure(exception) {
                     reject(Cognito.getErrorObject(exception));
@@ -284,4 +285,28 @@ export class Cognito extends Common {
             message: error.getMessage()
         } as ErrorObject
     );
+}
+
+export enum Region {
+    UNKNOWN = 'Unknown',
+    US_GOV_EAST_1 = 'US_GOV_EAST_1',
+    US_EAST_1 = 'US_EAST_1',
+    US_EAST_2 = 'US_EAST_2',
+    US_WEST_1 = 'US_WEST_1',
+    US_WEST_2 = 'US_WEST_2',
+    EU_WEST_1 = 'EU_WEST_1',
+    EU_WEST_2 = 'EU_WEST_2',
+    EU_WEST_3 = 'EU_WEST_3',
+    EU_CENTRAL_1 = 'EU_CENTRAL_1',
+    EU_NORTH_1 = 'EU_NORTH_1',
+    AP_SOUTH_1 = 'AP_SOUTH_1',
+    AP_SOUTHEAST_1 = 'AP_SOUTHEAST_1',
+    AP_SOUTHEAST_2 = 'AP_SOUTHEAST_2',
+    AP_NORTHEAST_1 = 'AP_NORTHEAST_1',
+    AP_NORTHEAST_2 = 'AP_NORTHEAST_2',
+    SA_EAST_1 = 'SA_EAST_1',
+    CA_CENTRAL_1 = 'CA_CENTRAL_1',
+    CN_NORTH_1 = 'CN_NORTH_1',
+    CN_NORTHWEST_1 = 'CN_NORTHWEST_1',
+    DEFAULT_REGION = 'DEFAULT_REGION',
 }
