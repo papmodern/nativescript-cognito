@@ -35,6 +35,8 @@ export declare class DetailAttributes {
     email_verified;
     phone_number_verified;
     phone_number;
+    given_name;
+    family_name;
     nickname;
     email;
 }
