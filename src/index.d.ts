@@ -51,7 +51,7 @@ export declare class Cognito extends Common {
     // or..
     // take the ios or android .d.ts files and copy/paste them here
 
-    constructor(userPoolId, clientId, secret?);
+    constructor(userPoolId, clientId, secret?, region?: Region);
 
     // TODO: Create AWSIdentityUser class definitions
     public getCurrentUser(): any;
@@ -78,4 +78,28 @@ export declare class Cognito extends Common {
     public getUserDetails(): Promise<UserDetails>;
 
     public logout(): void;
+}
+
+export declare enum Region {
+    UNKNOWN,
+    US_GOV_EAST_1,
+    US_EAST_1,
+    US_EAST_2,
+    US_WEST_1,
+    US_WEST_2,
+    EU_WEST_1,
+    EU_WEST_2,
+    EU_WEST_3,
+    EU_CENTRAL_1,
+    EU_NORTH_1,
+    AP_SOUTH_1,
+    AP_SOUTHEAST_1,
+    AP_SOUTHEAST_2,
+    AP_NORTHEAST_1,
+    AP_NORTHEAST_2,
+    SA_EAST_1,
+    CA_CENTRAL_1,
+    CN_NORTH_1,
+    CN_NORTHWEST_1,
+    DEFAULT_REGION,
 }
