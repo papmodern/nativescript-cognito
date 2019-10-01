@@ -1,5 +1,6 @@
+import * as dialogs from "tns-core-modules/ui/dialogs";
 import {Observable} from 'tns-core-modules/data/observable';
-import {Cognito} from 'nativescript-cognito';
+import {Cognito, Region} from 'nativescript-cognito';
 import {categories} from "tns-core-modules/trace";
 import Debug = categories.Debug;
 
@@ -15,7 +16,7 @@ export class HelloWorldModel extends Observable {
     }
 
     init() {
-        this.cognito = new Cognito("pool-id", "client-id");
+        this.cognito = new Cognito("pool-id", "client-id", null, Region.US_EAST_1);
     }
 
     async login() {
@@ -23,9 +24,32 @@ export class HelloWorldModel extends Observable {
             console.log("Hello");
             let data = await this.cognito.authenticate(this.email, this.password);
             let details = await this.cognito.getUserDetails();
-            console.log(data);
+            console.log(data.isValid);
+            console.log(data.isValidForThreshold);
             console.log(details.attributes);
             console.log(details.settings);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async auth() {
+        try {
+            let data = await this.cognito.getCurrentUserSession();
+            console.log("Token issuedAt: ", data.idToken.issuedAt);
+            console.log("Token expiration: ", data.idToken.expiration);
+            await dialogs.alert(`Auth check success: ${data.idToken.expiration}`);
+        } catch (e) {
+            console.log(e);
+            await dialogs.alert("Auth check failed");
+        }
+
+    }
+
+    async logout() {
+        try {
+            await this.cognito.logout();
+            dialogs.alert("Logout success");
         } catch (e) {
             console.log(e);
         }
